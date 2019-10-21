@@ -100,6 +100,7 @@ public enum Accessibility {
      */
     case afterFirstUnlock
 
+    #if !targetEnvironment(macCatalyst)
     /**
      Item data can always be accessed
      regardless of the lock state of the device. This is not recommended
@@ -107,6 +108,7 @@ public enum Accessibility {
      to a new device when using encrypted backups.
      */
     case always
+    #endif
 
     /**
      Item data can
@@ -141,6 +143,7 @@ public enum Accessibility {
      */
     case afterFirstUnlockThisDeviceOnly
 
+    #if !targetEnvironment(macCatalyst)
     /**
      Item data can always
      be accessed regardless of the lock state of the device. This option
@@ -149,6 +152,7 @@ public enum Accessibility {
      restored to a new device, these items will be missing.
      */
     case alwaysThisDeviceOnly
+    #endif
 }
 
 public struct AuthenticationPolicy: OptionSet {
@@ -830,7 +834,7 @@ public final class Keychain {
         return type(of: self).prettify(itemClass: itemClass, items: items())
     }
 
-    #if os(iOS)
+    #if os(iOS) && !targetEnvironment(macCatalyst)
     @available(iOS 8.0, *)
     public func getSharedPassword(_ completion: @escaping (_ account: String?, _ password: String?, _ error: Error?) -> () = { account, password, error -> () in }) {
         if let domain = server.host {
@@ -850,7 +854,7 @@ public final class Keychain {
     }
     #endif
 
-    #if os(iOS)
+    #if os(iOS) && !targetEnvironment(macCatalyst)
     @available(iOS 8.0, *)
     public func getSharedPassword(_ account: String, completion: @escaping (_ password: String?, _ error: Error?) -> () = { password, error -> () in }) {
         if let domain = server.host {
@@ -872,14 +876,14 @@ public final class Keychain {
     }
     #endif
 
-    #if os(iOS)
+    #if os(iOS) && !targetEnvironment(macCatalyst)
     @available(iOS 8.0, *)
     public func setSharedPassword(_ password: String, account: String, completion: @escaping (_ error: Error?) -> () = { e -> () in }) {
         setSharedPassword(password as String?, account: account, completion: completion)
     }
     #endif
 
-    #if os(iOS)
+    #if os(iOS) && !targetEnvironment(macCatalyst)
     @available(iOS 8.0, *)
     fileprivate func setSharedPassword(_ password: String?, account: String, completion: @escaping (_ error: Error?) -> () = { e -> () in }) {
         if let domain = server.host {
@@ -897,35 +901,35 @@ public final class Keychain {
     }
     #endif
 
-    #if os(iOS)
+    #if os(iOS) && !targetEnvironment(macCatalyst)
     @available(iOS 8.0, *)
     public func removeSharedPassword(_ account: String, completion: @escaping (_ error: Error?) -> () = { e -> () in }) {
         setSharedPassword(nil, account: account, completion: completion)
     }
     #endif
 
-    #if os(iOS)
+    #if os(iOS) && !targetEnvironment(macCatalyst)
     @available(iOS 8.0, *)
     public class func requestSharedWebCredential(_ completion: @escaping (_ credentials: [[String: String]], _ error: Error?) -> () = { credentials, error -> () in }) {
         requestSharedWebCredential(domain: nil, account: nil, completion: completion)
     }
     #endif
 
-    #if os(iOS)
+    #if os(iOS) && !targetEnvironment(macCatalyst)
     @available(iOS 8.0, *)
     public class func requestSharedWebCredential(domain: String, completion: @escaping (_ credentials: [[String: String]], _ error: Error?) -> () = { credentials, error -> () in }) {
         requestSharedWebCredential(domain: domain, account: nil, completion: completion)
     }
     #endif
 
-    #if os(iOS)
+    #if os(iOS) && !targetEnvironment(macCatalyst)
     @available(iOS 8.0, *)
     public class func requestSharedWebCredential(domain: String, account: String, completion: @escaping (_ credentials: [[String: String]], _ error: Error?) -> () = { credentials, error -> () in }) {
         requestSharedWebCredential(domain: Optional(domain), account: Optional(account)!, completion: completion)
     }
     #endif
 
-    #if os(iOS)
+    #if os(iOS) && !targetEnvironment(macCatalyst)
     @available(iOS 8.0, *)
     fileprivate class func requestSharedWebCredential(domain: String?, account: String?, completion: @escaping (_ credentials: [[String: String]], _ error: Error?) -> ()) {
         SecRequestSharedWebCredential(domain as CFString?, account as CFString?) { (credentials, error) -> () in
@@ -960,7 +964,7 @@ public final class Keychain {
     }
     #endif
 
-    #if os(iOS)
+    #if os(iOS) && !targetEnvironment(macCatalyst)
     /**
      @abstract Returns a randomly generated password.
      @return String password in the form xxx-xxx-xxx-xxx where x is taken from the sets "abcdefghkmnopqrstuvwxy", "ABCDEFGHJKLMNPQRSTUVWXYZ", "3456789" with at least one character from each set being present.
@@ -1170,7 +1174,7 @@ private let UseAuthenticationUIFail = String(kSecUseAuthenticationUIFail)
 @available(watchOS, unavailable)
 private let UseAuthenticationUISkip = String(kSecUseAuthenticationUISkip)
 
-#if os(iOS)
+#if os(iOS) && !targetEnvironment(macCatalyst)
 /** Credential Key Constants */
 private let SharedPassword = String(kSecSharedPassword)
 #endif
@@ -1196,7 +1200,6 @@ extension Keychain: CustomStringConvertible, CustomDebugStringConvertible {
 }
 
 extension Options {
-
     func query() -> [String: Any] {
         var query = [String: Any]()
 
@@ -1292,7 +1295,6 @@ extension Attributes: CustomStringConvertible, CustomDebugStringConvertible {
 }
 
 extension ItemClass: RawRepresentable, CustomStringConvertible {
-
     public init?(rawValue: String) {
         switch rawValue {
         case String(kSecClassGenericPassword):
@@ -1324,7 +1326,6 @@ extension ItemClass: RawRepresentable, CustomStringConvertible {
 }
 
 extension ProtocolType: RawRepresentable, CustomStringConvertible {
-
     public init?(rawValue: String) {
         switch rawValue {
         case String(kSecAttrProtocolFTP):
@@ -1530,7 +1531,6 @@ extension ProtocolType: RawRepresentable, CustomStringConvertible {
 }
 
 extension AuthenticationType: RawRepresentable, CustomStringConvertible {
-
     public init?(rawValue: String) {
         switch rawValue {
         case String(kSecAttrAuthenticationTypeNTLM):
@@ -1598,7 +1598,6 @@ extension AuthenticationType: RawRepresentable, CustomStringConvertible {
 }
 
 extension Accessibility: RawRepresentable, CustomStringConvertible {
-
     public init?(rawValue: String) {
         if #available(OSX 10.10, *) {
             switch rawValue {
@@ -1606,16 +1605,20 @@ extension Accessibility: RawRepresentable, CustomStringConvertible {
                 self = .whenUnlocked
             case String(kSecAttrAccessibleAfterFirstUnlock):
                 self = .afterFirstUnlock
+            #if !targetEnvironment(macCatalyst)
             case String(kSecAttrAccessibleAlways):
                 self = .always
+            #endif
             case String(kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly):
                 self = .whenPasscodeSetThisDeviceOnly
             case String(kSecAttrAccessibleWhenUnlockedThisDeviceOnly):
                 self = .whenUnlockedThisDeviceOnly
             case String(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly):
                 self = .afterFirstUnlockThisDeviceOnly
+            #if !targetEnvironment(macCatalyst)
             case String(kSecAttrAccessibleAlwaysThisDeviceOnly):
                 self = .alwaysThisDeviceOnly
+            #endif
             default:
                 return nil
             }
@@ -1625,14 +1628,18 @@ extension Accessibility: RawRepresentable, CustomStringConvertible {
                 self = .whenUnlocked
             case String(kSecAttrAccessibleAfterFirstUnlock):
                 self = .afterFirstUnlock
+            #if !targetEnvironment(macCatalyst)
             case String(kSecAttrAccessibleAlways):
                 self = .always
+            #endif
             case String(kSecAttrAccessibleWhenUnlockedThisDeviceOnly):
                 self = .whenUnlockedThisDeviceOnly
             case String(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly):
                 self = .afterFirstUnlockThisDeviceOnly
+            #if !targetEnvironment(macCatalyst)
             case String(kSecAttrAccessibleAlwaysThisDeviceOnly):
                 self = .alwaysThisDeviceOnly
+            #endif
             default:
                 return nil
             }
@@ -1645,8 +1652,10 @@ extension Accessibility: RawRepresentable, CustomStringConvertible {
             return String(kSecAttrAccessibleWhenUnlocked)
         case .afterFirstUnlock:
             return String(kSecAttrAccessibleAfterFirstUnlock)
+        #if !targetEnvironment(macCatalyst)
         case .always:
             return String(kSecAttrAccessibleAlways)
+        #endif
         case .whenPasscodeSetThisDeviceOnly:
             if #available(OSX 10.10, *) {
                 return String(kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly)
@@ -1657,8 +1666,10 @@ extension Accessibility: RawRepresentable, CustomStringConvertible {
             return String(kSecAttrAccessibleWhenUnlockedThisDeviceOnly)
         case .afterFirstUnlockThisDeviceOnly:
             return String(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly)
+        #if !targetEnvironment(macCatalyst)
         case .alwaysThisDeviceOnly:
             return String(kSecAttrAccessibleAlwaysThisDeviceOnly)
+        #endif
         }
     }
 
@@ -1668,16 +1679,20 @@ extension Accessibility: RawRepresentable, CustomStringConvertible {
             return "WhenUnlocked"
         case .afterFirstUnlock:
             return "AfterFirstUnlock"
+        #if !targetEnvironment(macCatalyst)
         case .always:
             return "Always"
+        #endif
         case .whenPasscodeSetThisDeviceOnly:
             return "WhenPasscodeSetThisDeviceOnly"
         case .whenUnlockedThisDeviceOnly:
             return "WhenUnlockedThisDeviceOnly"
         case .afterFirstUnlockThisDeviceOnly:
             return "AfterFirstUnlockThisDeviceOnly"
+        #if !targetEnvironment(macCatalyst)
         case .alwaysThisDeviceOnly:
             return "AlwaysThisDeviceOnly"
+        #endif
         }
     }
 }

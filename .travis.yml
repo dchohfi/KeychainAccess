@@ -21,6 +21,8 @@ matrix:
     env: ACTION='test:appletvsimulator'
   - osx_image: xcode11
     env: ACTION='test:macosx'
+  - osx_image: xcode11
+    script: xcodebuild test -workspace KeychainAccess.xcworkspace -scheme KeychainAccess -configuration Debug -enableCodeCoverage YES -derivedDataPath build -hideShellScriptEnvironment -destination 'platform=macOS,arch=x86_64,variant=Mac Catalyst' -only-testing:KeychainAccessTests-MacCatalyst SWIFT_VERSION=5.1 GCC_SYMBOLS_PRIVATE_EXTERN=NO
 
   - osx_image: xcode10.3
     env: ACTION=build
